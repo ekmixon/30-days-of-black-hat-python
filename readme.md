@@ -1,5 +1,5 @@
 # Description 
-**#30daysofblackhatpython** is a series of my own so that I could learn to use python for pentesting purposes. Here, I will be adding my python pentesting tools day-by-day! Beginners can also take inspiration from this repo to create their own python tools ! 
+**#30daysofblackhatpython** is a series of my own. I always wanted to learn using python in a offensive way ! This series paves the way towards my aim ! 
 
 ## References 
 - Black Hat Python 1st Edition | **[Link To buy](https://www.amazon.in/Black-Hat-Python-Justin-Seitz/dp/1593275900)**
@@ -8,5 +8,5 @@
 
 ## Tools Made in the journey ! 
 ### Network Section 
-### 1. Network & port scanner ! 
+### 1. Nmap
 - [Code]()
