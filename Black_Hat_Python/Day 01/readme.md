@@ -6,7 +6,11 @@ Networkscanner is a Network Scanner which for now provides functionalities like
 
 ![Image](../../Attackments/Day01.png)
 
-**Note:- UDP Scan for now only works on url provided**
+**Note:- UDP Scan for now only works on Url format**
+## Learning 
+- How to Avoid Race condition using locks in threading 
+- How to use Socket module to create simple connections
+- How to use argparse to create command-line arguments 
 
 ## Resources Used !
 - Writeup for Arp scanner by Dharmil Chhadva | [Link](https://levelup.gitconnected.com/writing-a-network-scanner-using-python-a41273baf1e2)
