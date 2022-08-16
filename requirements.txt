@@ -1,3 +1,5 @@
 scapy
 argparse
 socket
+termcolor
+paramiko
