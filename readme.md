@@ -10,5 +10,5 @@
 ### Network Section 
 ### 1. Multi-Threaded Network Scanner supporting Udp and Tcp port scan
 - [Code](https://raw.githubusercontent.com/calc1f4r/30-days-of-black-hat-python/master/Black_Hat_Python/Day%2001/networkscanner.py)
-### 2. Multi-Threaded ssh-bruteforcer
+### 2. Ctf-helper supporting multithread ssh and ftp bruteforcing
 - [Code](https://github.com/calc1f4r/30-days-of-black-hat-python/tree/master/Black_Hat_Python/Day%2002)
