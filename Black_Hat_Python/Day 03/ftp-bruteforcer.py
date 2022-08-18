@@ -150,11 +150,11 @@ if __name__=="__main__":
         if not arguments.port:
             arguments.port=21
         print("\n---------------------------------------------------------\n---------------------------------------------------------")    
-        print(f"[*] Target : {arguments.target}")
-        print(f"[*] Port : {'22' if not arguments.port else arguments.port}")
-        print(f"[*] Threads : {arguments.threads}")
-        print(f"[*] Wordlist : {arguments.wordlist}")
-        print(f"[*] Protocol : {'ftp' if arguments.ftp else 'ssh'}")
+        print(f"[*] Target\t: {arguments.target}")
+        print(f"[*] Port\t: {'22' if not arguments.port else arguments.port}")
+        print(f"[*] Threads\t: {arguments.threads}")
+        print(f"[*] Wordlist\t: {arguments.wordlist}")
+        print(f"[*] Protocol\t: {'ftp' if arguments.ftp else 'ssh'}")
         print("---------------------------------------------------------\n---------------------------------------------------------")    
         print(colored(f"Ftp Bruteforce starting at {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}",'yellow'))
         print("---------------------------------------------------------\n---------------------------------------------------------")    
