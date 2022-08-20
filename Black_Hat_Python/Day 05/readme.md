@@ -4,6 +4,10 @@ Hey, Everyone knows what a reverse shell is nowadays, So why not make it out of 
     - Requirements => Just socket just be installed on the client if not make it .exe file
 - reverse-server-attacker.py => It is for own , use it to listen for connections 
 
+
+https://user-images.githubusercontent.com/74751675/185759821-2beb5bbc-846a-4811-a67a-2ef1c6f1dd6d.mp4
+
+
 ## Learning
 - How to use client connection object for sending commands and recieving commands ! 
 - How to use subprocess module to execute commands with python ! 
