@@ -3,3 +3,5 @@ argparse
 socket
 termcolor
 paramiko
+requests
+beautifulsoup4
