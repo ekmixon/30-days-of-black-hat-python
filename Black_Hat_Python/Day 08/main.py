@@ -1,12 +1,12 @@
 import argparse
 from threading import Thread
-from turtle import tilt, title
 from termcolor import colored
 from os import path
 from sys import exit
 from queue import Queue
 import requests
 from bs4 import BeautifulSoup
+
 def get_args():
     parser=argparse.ArgumentParser()
     parser.add_argument('domain',help="target to scan")
