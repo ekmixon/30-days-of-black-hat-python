@@ -19,5 +19,5 @@
 ### Web Hacking 
 ### 5. Multithreaded Subdomain Bruteforcer which supports filtering options 
 - [Code](https://github.com/calc1f4r/30-days-of-black-hat-python/tree/master/Black_Hat_Python/Day%2008)
-### 6. Multithreaded Directory Bruteforcer which supports various functioanlities 
+### 6. Multithreaded Directory Bruteforcer which supports various Functionalities
 - [Code](https://github.com/calc1f4r/30-days-of-black-hat-python/tree/master/Black_Hat_Python/Day%2009)
