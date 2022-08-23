@@ -158,4 +158,4 @@ if __name__=="__main__":
     if outputfile:
         with open(outputfile,'w') as f:
             for subdomain in subdomains:
-                f.write(f"Found {subdomains[subdomain][0]}     [{subdomains[subdomain][1]}]\t{subdomain}{subdomains[subdomain][2]}         {subdomains[subdomain][3]}\n")
+                f.write(f"Found {subdomains[subdomain][0]}     [{subdomains[subdomain][1]}]\t{subdomain}{subdomains[subdomain][2]}\n")
