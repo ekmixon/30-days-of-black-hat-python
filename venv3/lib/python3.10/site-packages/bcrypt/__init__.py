@@ -135,7 +135,7 @@ def kdf(
     if isinstance(password, str) or isinstance(salt, str):
         raise TypeError("Strings must be encoded before hashing")
 
-    if len(password) == 0 or len(salt) == 0:
+    if not password or not salt:
         raise ValueError("password and salt must not be empty")
 
     if desired_key_bytes <= 0 or desired_key_bytes > 512:

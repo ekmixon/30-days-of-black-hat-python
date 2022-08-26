@@ -26,14 +26,14 @@ def get_args():
     parser.add_argument('-t','--threads',dest='threads',required=False,default=4,type=int,help="Specify the thread to use ,Default:4,supports 8 threads ")
     parser.add_argument('-ftp',dest='ftp',required=False,action="store_true",help="Specify for Ftp")
     parser.add_argument('-ssh',dest='ssh',required=False,action='store_true',help="Specify it for SSH")
-    
+
     arguments=parser.parse_args()
- 
+
     if not (arguments.ftp or arguments.ssh):
-        print(colored(f"[-] Please Choose one of the protocols "))
+        print(colored("[-] Please Choose one of the protocols "))
         parser.print_usage()
         exit(1)
-    
+
     return arguments
 
 
@@ -96,67 +96,66 @@ def bruteforce(host,port,username,protocol):
             pass    
         
 def main(host,port,username,wordlist,threads,protocol):
-    
+
     global q
-    
+
     passwords=[]
-    
+
     with open (wordlist,'r') as f:
-        
-        for password in f.readlines():
-            
+
+        for password in f:
             password=password.strip()
-            
+
             passwords.append(password)
     try:
         for thread in range(threads):
-            
+
             thread=Thread(target=bruteforce,args=(host,port,username,protocol))
-            
+
             thread.daemon=True
-            
+
             thread.start()
     except:
-        pass        
+        pass
     for password in passwords:
         q.put(password)
-        
+
     q.join()
         
         
 if __name__=="__main__":
-    
+
     arguments=get_args()
-    
+
     q=Queue()
-    
+
     if not path.exists(arguments.wordlist):
         print(colored("[-] Wordlist doesn't exist",'red'))
         exit(1)
     if arguments.ssh:
         if not arguments.port:
             arguments.port=22
-        print("\n---------------------------------------------------------\n---------------------------------------------------------")    
+        print("\n---------------------------------------------------------\n---------------------------------------------------------")
         print(f"[*] Target\t: {arguments.target}")
-        print(f"[*] Port\t: {'22' if not arguments.port else arguments.port}")
+        print(f"[*] Port\t: {arguments.port or '22'}")
         print(f"[*] Threads\t: {arguments.threads}")
         print(f"[*] Wordlist\t: {arguments.wordlist}")
         print(f"[*] Protocol\t: {'ssh' if arguments.ssh else 'ftp'}")
-        print("---------------------------------------------------------\n---------------------------------------------------------")    
+        print("---------------------------------------------------------\n---------------------------------------------------------")
         print(colored(f"SSH-Bruteforce starting at {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}",'yellow'))
-        print("---------------------------------------------------------\n---------------------------------------------------------")    
+        print("---------------------------------------------------------\n---------------------------------------------------------")
         main(arguments.target,arguments.port,arguments.username,arguments.wordlist,arguments.threads,'ssh')
     elif arguments.ftp:
         if not arguments.port:
             arguments.port=21
-        print("\n---------------------------------------------------------\n---------------------------------------------------------")    
+        print("\n---------------------------------------------------------\n---------------------------------------------------------")
         print(f"[*] Target\t: {arguments.target}")
-        print(f"[*] Port\t: {'22' if not arguments.port else arguments.port}")
+        print(f"[*] Port\t: {arguments.port or '22'}")
         print(f"[*] Threads\t: {arguments.threads}")
         print(f"[*] Wordlist\t: {arguments.wordlist}")
         print(f"[*] Protocol\t: {'ftp' if arguments.ftp else 'ssh'}")
-        print("---------------------------------------------------------\n---------------------------------------------------------")    
+        print("---------------------------------------------------------\n---------------------------------------------------------")
         print(colored(f"Ftp Bruteforce starting at {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}",'yellow'))
-        print("---------------------------------------------------------\n---------------------------------------------------------")    
+        print("---------------------------------------------------------\n---------------------------------------------------------")
         main(arguments.target,arguments.port,arguments.username,arguments.wordlist,arguments.threads,'ftp')
     

@@ -26,8 +26,7 @@ def get_args():
     return parser.parse_args()
 
 def password_brute(passwords):
-    params={}
-    params[usernameparam]=username
+    params = {usernameparam: username}
     while not passwords.empty:
         time.sleep(5) 
         passwd=passwords.get()
@@ -44,21 +43,18 @@ def handle_threads(threads):
     """ handle threads """
     password=[]
     global passwords
-    
-    
+
+
     with open(password_file,'r') as f:
-        for word in f.readlines():
-            password.append(word.strip())
-    
-    
+        password.extend(word.strip() for word in f)
     for _ in range(threads):
         thread=Thread(target=password_brute,args=(passwords,))
         thread.daemon=True
         thread.start()
-    
-        
+
+
     for word in passwords:
-        passwords.put(word)    
+        passwords.put(word)
     passwords.join()
     
 
@@ -78,7 +74,7 @@ def print_banner(url,usernameparam,username,passwordparam,password_file,threads)
 if __name__=="__main__":
     passwords=Queue()
     arguments=get_args()
-    
+
     usernameparam=arguments.usernameparam
     username=arguments.username
     invalidtext=arguments.invalidtext
@@ -89,7 +85,7 @@ if __name__=="__main__":
     if not path.exists(password_file):
         print(colored("[-] Provide a valid Password File",'red'))
         exit(1)
-        
-    
+
+
     print_banner(url,usernameparam,username,passwordparam,password_file,threads)
     handle_threads(threads)

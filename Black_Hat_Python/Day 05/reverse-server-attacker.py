@@ -14,8 +14,7 @@ def beautify_terminal_take_command(whoami,cwd):
     print(colored(f"📁 [{cwd}]",'blue',attrs=['dark']),end=" at ")
     print(colored(f"[{datetime.now().strftime('%H:%M:%S')}]",'magenta'))
     print(colored("# ",'red'),end="")
-    cmd=input().strip()
-    return cmd
+    return input().strip()
 
 
 def send_commands(client_con):

