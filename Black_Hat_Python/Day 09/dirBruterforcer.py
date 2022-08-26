@@ -30,7 +30,7 @@ def get_args():
     return parser.parse_args()
 
 def print_and_save_output(status_code,response_length,url,title):
-    
+
     if status_code>=200 and status_code<300:
         color='green'
     elif status_code>=300 and status_code<400:
@@ -41,15 +41,16 @@ def print_and_save_output(status_code,response_length,url,title):
         color='magenta'
     print(colored(f"{[status_code]}".ljust(9," "),color),end="")
     print(f"{response_length}".ljust(9),end="")
-    print(f"{url}",end="    ")  
+    print(f"{url}",end="    ")
     if not hide_title:
         print(f"[{title.strip()}]")
     global Directories
     if output:
-        if not hide_title:
-            Directories[url]=[status_code,response_length,title]
-        else:
-            Directories[url]=[status_code,response_length]
+        Directories[url] = (
+            [status_code, response_length]
+            if hide_title
+            else [status_code, response_length, title]
+        )
             
 
 def brute_dir(word):
@@ -59,7 +60,7 @@ def brute_dir(word):
             response=requests.get(url,headers=headers,allow_redirects=redirection,timeout=1)
         else:
             response=requests.get(url,allow_redirects=redirection,timeout=1)
-            
+
     except requests.exceptions.Timeout:
         pass
     except Exception as err:
@@ -73,38 +74,39 @@ def brute_dir(word):
             title=soup.title.string
         else:
             tilte=[]
-        
+
         if match_codes:
-            if status_code in match_codes:
-                if filter_size:
-                    if response_length not in filter_size:
-                        print_and_save_output(status_code,response_length,url,title)
-                elif match_size:
-                    if response_length in match_size:
-                        print_and_save_output(status_code,response_length,url,title)
-                else:
-                    print_and_save_output(status_code,response_length,url,title)
-                    
-        elif filter_codes:
-            if status_code not in filter_codes:
-                if filter_size:
-                    if response_length not in filter_size:
-                        print_and_save_output(status_code,response_length,url,title)
-                elif match_size:
-                    if response_length in match_size:
-                        print_and_save_output(status_code,response_length,url,title)
-                else:
-                    print_and_save_output(status_code,response_length,url,title)
-                            
-        else:
-            if filter_size:
-                if response_length not in filter_size:
-                    print_and_save_output(status_code,response_length,url,title)
-            elif match_size:
-                if response_length in match_size:
-                    print_and_save_output(status_code,response_length,url,title)
-            else:
+            if status_code in match_codes and (
+                filter_size
+                and response_length not in filter_size
+                or not filter_size
+                and match_size
+                and response_length in match_size
+                or not filter_size
+                and not match_size
+            ):
                 print_and_save_output(status_code,response_length,url,title)
+        elif filter_codes:
+            if status_code not in filter_codes and (
+                filter_size
+                and response_length not in filter_size
+                or not filter_size
+                and match_size
+                and response_length in match_size
+                or not filter_size
+                and not match_size
+            ):
+                print_and_save_output(status_code,response_length,url,title)
+        elif (
+            filter_size
+            and response_length not in filter_size
+            or not filter_size
+            and match_size
+            and response_length in match_size
+            or not filter_size
+            and not match_size
+        ):
+            print_and_save_output(status_code,response_length,url,title)
             
 def get_words():
     try:
@@ -120,21 +122,15 @@ def handle_threads(threads):
         thread=Thread(target=get_words)
         thread.daemon=True
         thread.start()
-    dirs=[]    
+    dirs=[]
     with open (wordlist,'r') as f:
-        for word  in f.readlines():
+        for word in f:
             word=word.strip()
-            # if the word is admin.php , index.html,style.css
-            if '.' in word:
-                dirs.append(f'/{word}')
-            else:
-                dirs.append(f'/{word}')
+            dirs.append(f'/{word}')
             if extensions:
-                for ext in extensions:
-                    dirs.append(f'/{word}.{ext}')
-
+                dirs.extend(f'/{word}.{ext}' for ext in extensions)
     global words 
-    
+
     for word in dirs:
         words.put(word)
     words.join()
@@ -166,9 +162,9 @@ def print_banner(target,extensions,headers,useragent,threads,match_codes,match_s
     print("-"*80)
 
 if __name__=="__main__":
-    
+
     words=Queue()
-    
+
     arguments=get_args()
     # getting all the command-line values 
     target=arguments.target
@@ -180,13 +176,13 @@ if __name__=="__main__":
 
     useragent=arguments.user_agent
     threads=arguments.threads
-    
+
     match_codes=arguments.match_codes
     match_size=arguments.match_size
-    
+
     filter_codes=arguments.filter_codes
     filter_size=arguments.filter_size
-    
+
     if match_size and filter_size:
         print(colored("[+] For now Using Matching and Filtering Response Length together is not available !",'red'))
         exit()
@@ -194,25 +190,25 @@ if __name__=="__main__":
         print(colored("[+] For now Using Matching and Filtering Response Status code together is not available !",'red'))
     output=arguments.output
     header=arguments.header
-    
+
     wordlist=arguments.wordlist
     if not path.exists(wordlist):
         print(colored("[-] Provide a valid wordlist file !",'red'))
         exit()
-    
+
     # Printing the banner 
     print_banner(target,extensions,header,useragent,threads,match_codes,match_size,filter_codes,filter_size,wordlist,output)
-    
+
     # Converting header varible data into dictionary so that it could be used while sending headers 
-    
-    
+
+
     headers={}
     if header:
         for header in header:
             headers[header.split(':')[0]]=f"{header.split(':')[1]}"
     if useragent:
         header[useragent.split(':')[0]]=f"{useragent.split(':')[1]}"
-        
+
     Directories={}
     if output:
         with open(output,'w') as f:

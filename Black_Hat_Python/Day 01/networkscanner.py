@@ -27,29 +27,26 @@ def get_args():
     parser.add_argument('-pU',dest="udpPortScan",help="Udp Port Scan",required=False,action='store_true')
     parser.add_argument('-p','--ports',dest="ports",help="Port range to scan, default is 1-65535 (all ports)",required=False,action='store',default='1-65535')
     parser.add_argument('-t','--threads',dest="threads",help="Threads for speed , default is 100",required=False,action='store',default=100,type=int)
-    
-    arguments=parser.parse_args()
-              
-   # Returning the arguments ! 
-    return arguments
+   # Returning the arguments !
+    return parser.parse_args()
 def arp_ping(ip):
-        # code for validating the ip address range syntax 
-        if not re.match(r'^(?:[0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]*$',ip):
-            print("[-] Please provide a valid Ip address range for arp ping !")
-            exit(1)
-            
-            
-        try:
-            arp_request_frame=scapy.ARP(pdst=ip) # creating a arp request frame with ip destination to our range provided !
-            
-            ether_broadcast_frame=scapy.Ether(dst="ff:ff:ff:ff:ff:ff") # setting the broadcast mac address to broadcast address ! 
-            
-            broadcast_arp_packet=ether_broadcast_frame/arp_request_frame # combining layer 2 and layer3 packets together ! means we have combined ethernet and arp frame togther ! 
-            
-            active_clients=scapy.srp(broadcast_arp_packet,timeout=3,verbose=False)[0] 
-            #.srp function takes the whole packet and transmits and also we are storing the response in the active_clients variable !
-            # In response we are returned a tuple  of length 2 in which clients who replied are in index 0 and who didn't replied are index 1 so we are only gathering active clients 
-            print("""----------------------------------\nIPaddress\tMac address\n----------------------------------""")
+    # code for validating the ip address range syntax 
+    if not re.match(r'^(?:[0-9]{1,3}\.){3}[0-9]{1,3}/[0-9]*$',ip):
+        print("[-] Please provide a valid Ip address range for arp ping !")
+        exit(1)
+
+
+    try:
+        arp_request_frame=scapy.ARP(pdst=ip) # creating a arp request frame with ip destination to our range provided !
+
+        ether_broadcast_frame=scapy.Ether(dst="ff:ff:ff:ff:ff:ff") # setting the broadcast mac address to broadcast address ! 
+
+        broadcast_arp_packet=ether_broadcast_frame/arp_request_frame # combining layer 2 and layer3 packets together ! means we have combined ethernet and arp frame togther ! 
+
+        active_clients=scapy.srp(broadcast_arp_packet,timeout=3,verbose=False)[0]
+        #.srp function takes the whole packet and transmits and also we are storing the response in the active_clients variable !
+        # In response we are returned a tuple  of length 2 in which clients who replied are in index 0 and who didn't replied are index 1 so we are only gathering active clients 
+        print("""----------------------------------\nIPaddress\tMac address\n----------------------------------""")
             # Printing the result 
             
 
@@ -57,12 +54,12 @@ def arp_ping(ip):
             # .hwsrc=>destination mac address
             # In reply of active replied clients we are replied with a list in which the first index '0' consists the data about 2nd layer The Data Link layer and in index 1 it consists the data about Network layer so are parsing data from the layer 3 
             # The index 1 has a object inside it which has data , we are only taking psrc and hwsrc ! 
-            for i in range(0,len(active_clients)):
-                print(f"{active_clients[i][1].psrc}\t{active_clients[i][1].hwsrc}")
-            print("\n\n")
-        except Exception as err:
-            # Capturing the error !
-            print(f"[-] Error occured !, Reason => {err}")
+        for i in range(len(active_clients)):
+            print(f"{active_clients[i][1].psrc}\t{active_clients[i][1].hwsrc}")
+        print("\n\n")
+    except Exception as err:
+        # Capturing the error !
+        print(f"[-] Error occured !, Reason => {err}")
     
     
 # Threaded Port scanner Code ! 
@@ -89,17 +86,17 @@ def udp_packet_build(target):
     return packet
 
 def port_scan(port,host,scan_type):
-    
+
     if scan_type=='T':
         try:
         # creating the socket object with AF_INET=> ipv4 address and sock_stream means use tcp protocol to create connection!
             client=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-            
+
             # Setting the timeout to 1 s
             client.settimeout(1)
             # Connecting to host at a specific port ! 
             client.connect((host,port))
-            
+
         except KeyboardInterrupt:
             print ('You pressed Ctrl+C')
             exit(1)
@@ -112,7 +109,7 @@ def port_scan(port,host,scan_type):
                 print(f"{port}\tOpen")
         finally:
             client.close()    
-            
+
     if scan_type=='U':
         # In case of udp there is a problem as on open port udp doesn't replies back
         for _ in range(5): # doing it 5 times to avoid packey failure 
@@ -127,7 +124,6 @@ def port_scan(port,host,scan_type):
                 data,addr=sock.recvfrom(1024)
                 sock.close()
             except Exception as err:
-                pass
                 with lock:
                     pass
             else:
@@ -150,11 +146,11 @@ def scan_thread(host,scan_type):
     
 def main(scan_type,host,start_port,end_port,threads):
     global q
-    
+
     # creating a list of ports because we will put it the all the ports in queue
-    ports=[i for i in range(start_port,end_port)]   
-    
-    
+    ports = list(range(start_port,end_port))   
+        
+
     for thread in range(threads):
         # Creating threads 
         thread=Thread(target=scan_thread,args=(host,scan_type))
@@ -162,11 +158,11 @@ def main(scan_type,host,start_port,end_port,threads):
         thread.daemon=True
         # we are also starting the thread 
         thread.start()
-        
-        
+
+
     for worker in ports:
         # We are putting the each port in queue
-        q.put(worker)    
+        q.put(worker)
     # Used to wait until all the other threads don't finish
     q.join()
 

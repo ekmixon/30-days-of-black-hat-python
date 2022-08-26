@@ -23,10 +23,8 @@ def get_args():
     parser.add_argument('-w','--wordlist',dest='wordlist',required=True,type=str)
     parser.add_argument('-u','--username',dest='username',required=True,help="Username with which bruteforce to ")
     parser.add_argument('-t','--threads',dest='threads',required=False,default=4,type=int,help="Specify the thread to use ,Default:4,supports 8 threads ")
-    
-    arguments=parser.parse_args()
-    
-    return arguments
+
+    return parser.parse_args()
 
 # Main Function to bruteforce 
 def ssh_bruteforce(host,port,username,password):
@@ -60,30 +58,29 @@ def con_threads(host,port,username):
         
         
 def main(host,port,username,wordlist,threads):
-    
+
     global q
-    
+
     passwords=[]
-    
+
     with open (wordlist,'r') as f:
-        
-        for password in f.readlines():
-            
+
+        for password in f:
             password=password.strip()
-            
+
             passwords.append(password)
-    
+
     for thread in range(threads):
-        
+
         thread=Thread(target=con_threads,args=(host,port,username))
-        
+
         thread.daemon=True
-        
+
         thread.start()
-        
+
     for worker in passwords:
         q.put(worker)
-        
+
     q.join()
         
         
